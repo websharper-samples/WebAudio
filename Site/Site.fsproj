@@ -105,7 +105,10 @@
     <None Include="packages.config" />
     <None Include="diesirae.mp3" />
     <Compile Include="Samples.fs" />
+    <Compile Include="AudioHolder.fs" />
+    <Compile Include="ChannelSplitter.fs" />
     <Compile Include="AudioVisualizer.fs" />
+    <Compile Include="TimeDomain.fs" />
     <Compile Include="Client.fs" />
   </ItemGroup>
   <ItemGroup>

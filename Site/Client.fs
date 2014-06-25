@@ -9,6 +9,8 @@ module Client =
 
         Samples.Set.Create [
             !+ AudioVisualizer.Sample
+            !+ ChannelSplitter.Sample
+            !+ TimeDomain.Sample
         ]
 
     let Main = All.Show()

@@ -7,18 +7,12 @@ open IntelliFactory.WebSharper.Html5
 open IntelliFactory.WebSharper.JavaScript
 
 [<JavaScript>]
-module AudioVisualizer =
+module TimeDomain =
 
     let context = new AudioContext ()
     let mutable sourceNode = None
     let filter = context.CreateBiquadFilter()
     let buffer = ref null
-
-    let MkGradient (gradient : CanvasGradient) =
-        gradient.AddColorStop(1.,"#000000");
-        gradient.AddColorStop(0.75,"#ff0000");
-        gradient.AddColorStop(0.25,"#ffff00");
-        gradient.AddColorStop(0.,"#ffffff");
 
     let ToList (from : Uint8Array) =
         let rec helper n res =
@@ -27,13 +21,22 @@ module AudioVisualizer =
 
         helper (from.Length - 1) []
 
-    let DrawSpectrum (ctx : CanvasRenderingContext2D) (array : Uint8Array) =
+    let Canvas = HTML5.Tags.Canvas [ Width "512"; Height "256"; Attr.Style "background-color: black" ]
+
+    let DrawTimeDomain (ctx : CanvasRenderingContext2D) (array : Uint8Array) =
+        let c = JQuery.Of(Canvas.Dom)
+        let width = float <| c.Width()
+        let height = float <| c.Height()
+
+        ctx.ClearRect(0., 0., width, height)
         ToList array
         |> List.iteri (fun i a -> 
-                            ctx.FillRect(float(i * 5), 325. - float(a), 3., 325.)
+                            let value = (float a) / 256.
+                            let y = height - (height * value) - 1.
+                            ctx.FillStyle <- "#ffffff"
+                            ctx.FillRect(float i, y, 1., 1.)
                       )
 
-    let Canvas = HTML5.Tags.Canvas [ Width "1000"; Height "325" ]
 
     let ButtonEvent biq (_ : Element) (_ : Events.MouseEvent) =
         filter.Type <- biq
@@ -72,13 +75,10 @@ module AudioVisualizer =
         javascriptNode.Connect(context.Destination)
         javascriptNode.Onaudioprocess <- fun _ ->
                                             let array = new Uint8Array(int(analyser.FrequencyBinCount))
-                                            analyser.GetByteFrequencyData array
+                                            analyser.GetByteTimeDomainData array
                                             let ctx = (As<CanvasElement> Canvas.Dom).GetContext("2d")
-                                            ctx.ClearRect(0., 0., 1000., 325.)
-                                            let gradient = ctx.CreateLinearGradient(0.,0.,0.,300.)
-                                            MkGradient gradient
-                                            ctx.FillStyle <- gradient
-                                            DrawSpectrum ctx array
+
+                                            DrawTimeDomain ctx array
                                            
         filter.Type <- BiquadFilterType.Allpass
         filter.Connect(analyser)
@@ -133,8 +133,8 @@ module AudioVisualizer =
     
     let Sample =
         Samples.Build()
-            .Id("AudioVisualizer")
+            .Id("TimeDomainVisualizer")
             .FileName(__SOURCE_FILE__)
-            .Keywords(["webaudio"; "visualizer"; "frequency"; "spectrum"])
+            .Keywords(["webaudio"; "timedomain"; "visualizer"; "audio"])
             .Render(Main)
             .Create()
