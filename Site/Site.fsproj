@@ -34,7 +34,7 @@
     <OutputType>Library</OutputType>
     <Name>Site</Name>
     <RootNamespace>AudioVisualizer</RootNamespace>
-    <AssemblyName>AudioVisualizer</AssemblyName>
+    <AssemblyName>WebAudioSamples</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <WarningLevel>3</WarningLevel>
   </PropertyGroup>
