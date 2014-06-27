@@ -7,5 +7,5 @@ cp -r Site/*.jpg build/html/
 cp -r Site/*.css build/html/
 cp -r Site/*.html build/html/
 cp -r Site/*.json build/html/
-
+cp -r Site/*.mp3 build/html/
 
