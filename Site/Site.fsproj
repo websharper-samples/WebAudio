@@ -13,6 +13,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <NuGetPackageImportStamp>a21cb9c6</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
@@ -58,7 +59,6 @@
   </PropertyGroup>
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
-  <Import Project="..\packages\WebSharper.2.5.114.49\build\WebSharper.targets" Condition="Exists('..\packages\WebSharper.2.5.114.49\build\WebSharper.targets')" />
   <ProjectExtensions>
     <VisualStudio>
       <FlavorProperties Guid="{349c5851-65df-11da-9384-00065b846f21}">
@@ -113,7 +113,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="IntelliFactory.WebSharper.WebAudio">
-      <HintPath>C:\Users\istvan.gansperger\Documents\Visual Studio 2013\Projects\AudioVisualizer\packages\WebSharper.WebAudio.2.5.2.2\lib\net40\IntelliFactory.WebSharper.WebAudio.dll</HintPath>
+      <HintPath>..\packages\WebSharper.WebAudio.2.5.4.4\lib\net40\IntelliFactory.WebSharper.WebAudio.dll</HintPath>
     </Reference>
     <Reference Include="IntelliFactory.WebSharper.WebRTC">
       <HintPath>C:\Users\istvan.gansperger\Documents\Visual Studio 2013\Projects\AudioVisualizer\packages\WebSharper.WebRTC.2.5.1.1\lib\net40\IntelliFactory.WebSharper.WebRTC.dll</HintPath>
@@ -124,4 +124,11 @@
     <Reference Include="System.Numerics" />
     <Reference Include="System.Web" />
   </ItemGroup>
+  <Import Project="..\packages\WebSharper.2.5.117.52\build\WebSharper.targets" Condition="Exists('..\packages\WebSharper.2.5.117.52\build\WebSharper.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\WebSharper.2.5.117.52\build\WebSharper.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\WebSharper.2.5.117.52\build\WebSharper.targets'))" />
+  </Target>
 </Project>

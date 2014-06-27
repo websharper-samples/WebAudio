@@ -36,15 +36,15 @@ module ChannelSplitter =
     let Analyser () =
         let analyser1 = context.CreateAnalyser ()
         analyser1.SmoothingTimeConstant <- 0.3
-        analyser1.FftSize <- 1024u
+        analyser1.FftSize <- 1024
 
         let analyser2 = context.CreateAnalyser ()
         analyser2.SmoothingTimeConstant <- 0.0
-        analyser2.FftSize <- 1024u
+        analyser2.FftSize <- 1024
 
         let gainNode = context.CreateGain ()
 
-        let javascriptNode = context.CreateScriptProcessor (2048u, 1u, 1u)
+        let javascriptNode = context.CreateScriptProcessor (2048, 1, 1)
 
         //Workaroud for a bug in Chrome which makes the GC destroy 
         //the ScriptProcessorNode if it's not in global scope
@@ -79,8 +79,8 @@ module ChannelSplitter =
         gainNode.Connect(splitter)
 
 
-        splitter.Connect(analyser1, 0u, 0u)
-        splitter.Connect(analyser2, 1u, 0u)
+        splitter.Connect(analyser1, 0, 0)
+        splitter.Connect(analyser2, 1, 0)
 
         analyser1.Connect(javascriptNode)
         gainNode.Connect(context.Destination)

@@ -48,7 +48,7 @@ module AudioVisualizer =
             BiquadFilterType.Allpass
             BiquadFilterType.Bandpass
             BiquadFilterType.Highpass
-            BiquadFilterType.Highself
+            BiquadFilterType.Highshelf
             BiquadFilterType.Lowpass
             BiquadFilterType.Lowshelf
             BiquadFilterType.Notch
@@ -62,9 +62,9 @@ module AudioVisualizer =
     let Analyser () =
         let analyser = context.CreateAnalyser ()
         analyser.SmoothingTimeConstant <- 0.3
-        analyser.FftSize <- 1024u
+        analyser.FftSize <- 1024
 
-        let javascriptNode = context.CreateScriptProcessor (2048u, 1u, 1u)
+        let javascriptNode = context.CreateScriptProcessor (2048, 1, 1)
 
         //Workaroud for a bug in Chrome which makes the GC destroy the ScriptProcessorNode if it's not in global scope
         JavaScript.Global?sourceNode <- javascriptNode
