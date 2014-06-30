@@ -2,5 +2,8 @@
 
 [Samples][samp] for [WebSharper][ws] bindings to WebAudio.
 
+
+Please note that these features are rather new and not supported in every browser.
+
 [samp]: http://intellifactory.github.io/websharper.webaudio
 [ws]: http://websharper.com/
