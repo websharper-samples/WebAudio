@@ -2,8 +2,7 @@ namespace Site
 
 open IntelliFactory.WebSharper
 open IntelliFactory.WebSharper.JQuery
-open IntelliFactory.WebSharper.Html
-open IntelliFactory.WebSharper.Html5
+open IntelliFactory.WebSharper.Html.Client
 open IntelliFactory.WebSharper.JavaScript
 
 [<JavaScript>]
@@ -21,10 +20,10 @@ module TimeDomain =
 
         helper (from.Length - 1) []
 
-    let Canvas = HTML5.Tags.Canvas [ Width "512"; Height "256"; Attr.Style "background-color: black" ]
+    let CanvasEl = Canvas [ Width "512"; Height "256"; Attr.Style "background-color: black" ]
 
     let DrawTimeDomain (ctx : CanvasRenderingContext2D) (array : Uint8Array) =
-        let c = JQuery.Of(Canvas.Dom)
+        let c = JQuery.Of(CanvasEl.Dom)
         let width = float <| c.Width()
         let height = float <| c.Height()
 
@@ -70,13 +69,13 @@ module TimeDomain =
         let javascriptNode = context.CreateScriptProcessor (2048, 1, 1)
 
         //Workaroud for a bug in Chrome which makes the GC destroy the ScriptProcessorNode if it's not in global scope
-        JavaScript.Global?sourceNode <- javascriptNode
+        JS.Global?sourceNode <- javascriptNode
 
         javascriptNode.Connect(context.Destination)
         javascriptNode.Onaudioprocess <- fun _ ->
                                             let array = new Uint8Array(int(analyser.FrequencyBinCount))
                                             analyser.GetByteTimeDomainData array
-                                            let ctx = (As<CanvasElement> Canvas.Dom).GetContext("2d")
+                                            let ctx = (As<CanvasElement> CanvasEl.Dom).GetContext("2d")
 
                                             DrawTimeDomain ctx array
                                            
@@ -128,7 +127,7 @@ module TimeDomain =
                     JQuery.Of(elem).Append((Div [Attr.Style "display: inline-block"] -< RadioGroup).Dom) |> ignore
             )
 
-        JQuery.Of(elem).Append(Canvas.Dom) |> ignore
+        JQuery.Of(elem).Append(CanvasEl.Dom) |> ignore
         LoadSound "diesirae.mp3" ignition
     
     let Sample =

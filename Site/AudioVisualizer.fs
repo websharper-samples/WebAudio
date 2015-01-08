@@ -2,8 +2,7 @@ namespace Site
 
 open IntelliFactory.WebSharper
 open IntelliFactory.WebSharper.JQuery
-open IntelliFactory.WebSharper.Html
-open IntelliFactory.WebSharper.Html5
+open IntelliFactory.WebSharper.Html.Client
 open IntelliFactory.WebSharper.JavaScript
 
 [<JavaScript>]
@@ -30,10 +29,9 @@ module AudioVisualizer =
     let DrawSpectrum (ctx : CanvasRenderingContext2D) (array : Uint8Array) =
         ToList array
         |> List.iteri (fun i a -> 
-                            ctx.FillRect(float(i * 5), 325. - float(a), 3., 325.)
-                      )
+            ctx.FillRect(float(i * 5), 325. - float(a), 3., 325.))
 
-    let Canvas = HTML5.Tags.Canvas [ Width "1000"; Height "325" ]
+    let Canvas = Canvas [ Width "1000"; Height "325" ]
 
     let ButtonEvent biq (_ : Element) (_ : Events.MouseEvent) =
         filter.Type <- biq
@@ -67,7 +65,7 @@ module AudioVisualizer =
         let javascriptNode = context.CreateScriptProcessor (2048, 1, 1)
 
         //Workaroud for a bug in Chrome which makes the GC destroy the ScriptProcessorNode if it's not in global scope
-        JavaScript.Global?sourceNode <- javascriptNode
+        JS.Global?sourceNode <- javascriptNode
 
         javascriptNode.Connect(context.Destination)
         javascriptNode.Onaudioprocess <- fun _ ->
