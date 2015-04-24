@@ -1,9 +1,9 @@
 namespace Site
 
-open IntelliFactory.WebSharper
-open IntelliFactory.WebSharper.JQuery
-open IntelliFactory.WebSharper.Html.Client
-open IntelliFactory.WebSharper.JavaScript
+open WebSharper
+open WebSharper.JQuery
+open WebSharper.Html.Client
+open WebSharper.JavaScript
 
 [<JavaScript>]
 module ChannelSplitter =
@@ -114,12 +114,12 @@ module ChannelSplitter =
         Stop ()
         AudioHolder.StopCurrent()
 
-        JQuery.Of(VolumeControl.Dom).On("input", fun e ->
+        JQuery.Of(VolumeControl.Dom).On("input", fun e _ ->
             let v = As<float> (JQuery.Of(VolumeControl.Dom).Val())
             let max = As<float> (JQuery.Of(VolumeControl.Dom).Prop("max"))
             let fraction = v / max
             volume := fraction * fraction
-            false)
+        ).Ignore
 
         let maind = 
             Div [
