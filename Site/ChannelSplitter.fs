@@ -1,9 +1,11 @@
 namespace Site
 
 open WebSharper
-open WebSharper.JQuery
-open WebSharper.Html.Client
 open WebSharper.JavaScript
+open WebSharper.JQuery
+open WebSharper.UI
+open WebSharper.UI.Html
+open WebSharper.UI.Client
 
 [<JavaScript>]
 module ChannelSplitter =
@@ -25,12 +27,20 @@ module ChannelSplitter =
 
         helper (from.Length - 1) []
 
-    let Canvas =  Canvas [ Width "60"; Height "130"; Attr.Style "display: block;" ]
-
-    let VolumeControl = 
-        Input [ Attr.Type "range"; Attr.NewAttr "min" "1"; Attr.NewAttr "max" "100"; Attr.Value "100"; Attr.Style "width: 60px" ]
+    let Canvas = Elt.canvas [attr.width "60"; attr.height "130"; attr.style "display: block;"] []
 
     let volume = ref 1.0
+
+    let VolumeControl =
+        input [
+            attr.``type`` "range"; attr.min "1"; attr.max "100"; attr.value "100"; attr.style "width: 60px"
+            on.input (fun el _ ->
+                let v = As<float> (JQuery.Of(el).Val())
+                let max = As<float> (JQuery.Of(el).Prop("max"))
+                let fraction = v / max
+                volume := fraction * fraction
+            )
+        ] []
 
     let Analyser () =
         let analyser1 = context.CreateAnalyser ()
@@ -114,18 +124,11 @@ module ChannelSplitter =
         Stop ()
         AudioHolder.StopCurrent()
 
-        JQuery.Of(VolumeControl.Dom).On("input", fun e _ ->
-            let v = As<float> (JQuery.Of(VolumeControl.Dom).Val())
-            let max = As<float> (JQuery.Of(VolumeControl.Dom).Prop("max"))
-            let fraction = v / max
-            volume := fraction * fraction
-        ).Ignore
-
-        let maind = 
-            Div [
-                Canvas
-                VolumeControl
-            ]
+        Doc.Concat [
+            Canvas
+            VolumeControl
+        ]
+        |> Doc.Run elem
 
         let ignition buff = 
             context.DecodeAudioData(buff,
@@ -134,7 +137,6 @@ module ChannelSplitter =
                     Analyser ()
             )
 
-        JQuery.Of(elem).Append(maind.Dom) |> ignore
         LoadSound "diesirae.mp3" ignition
 
     let Sample =

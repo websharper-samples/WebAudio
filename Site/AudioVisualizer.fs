@@ -2,7 +2,10 @@ namespace Site
 
 open WebSharper
 open WebSharper.JQuery
-open WebSharper.Html.Client
+open WebSharper.UI
+open WebSharper.UI.Notation
+open WebSharper.UI.Html
+open WebSharper.UI.Client
 open WebSharper.JavaScript
 
 [<JavaScript>]
@@ -31,15 +34,15 @@ module AudioVisualizer =
         |> List.iteri (fun i a -> 
             ctx.FillRect(float(i * 5), 325. - float(a), 3., 325.))
 
-    let Canvas = Canvas [ Width "1000"; Height "325" ]
+    let Canvas = Elt.canvas [attr.width "1000"; attr.height "325"] []
 
-    let ButtonEvent biq (_ : Element) (_ : Events.MouseEvent) =
-        filter.Type <- biq
+    let rFilter =
+        Var.Create(BiquadFilterType.Allpass)
+            .Lens id (fun _ x -> filter.Type <- x; x)
 
     let GenRadioButton (filter : BiquadFilterType) =
-        let radio = Input [ Attr.Type "radio"; Attr.Name "filters"; ]
-                        |>! OnClick (ButtonEvent filter)
-        Div [ radio ] -< [ Text <| string filter ]
+        let radio = Doc.Radio [attr.name "filters"] filter rFilter
+        div [] [label [] [radio; text (string filter)]]
 
     let Filters =
         [
@@ -122,11 +125,14 @@ module AudioVisualizer =
                 fun bff ->
                     buffer := bff
                     Analyser ()
-                    JQuery.Of(RadioGroup.[0].Dom).Children().First().Prop("checked", "true") |> ignore
-                    JQuery.Of(elem).Append((Div [Attr.Style "display: inline-block"] -< RadioGroup).Dom) |> ignore
+                    rFilter := BiquadFilterType.Allpass
             )
 
-        JQuery.Of(elem).Append(Canvas.Dom) |> ignore
+        Doc.Concat [
+            Canvas
+            div [Attr.Style "display" "inline-block"] RadioGroup
+        ]
+        |> Doc.Run elem
         LoadSound "diesirae.mp3" ignition
     
     let Sample =

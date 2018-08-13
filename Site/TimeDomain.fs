@@ -1,9 +1,12 @@
 namespace Site
 
 open WebSharper
-open WebSharper.JQuery
-open WebSharper.Html.Client
 open WebSharper.JavaScript
+open WebSharper.JQuery
+open WebSharper.UI
+open WebSharper.UI.Notation
+open WebSharper.UI.Html
+open WebSharper.UI.Client
 
 [<JavaScript>]
 module TimeDomain =
@@ -20,7 +23,7 @@ module TimeDomain =
 
         helper (from.Length - 1) []
 
-    let CanvasEl = Canvas [ Width "512"; Height "256"; Attr.Style "background-color: black" ]
+    let CanvasEl = Elt.canvas [attr.width "512"; attr.height "256"; attr.style "background-color: black"] []
 
     let DrawTimeDomain (ctx : CanvasRenderingContext2D) (array : Uint8Array) =
         let c = JQuery.Of(CanvasEl.Dom)
@@ -36,14 +39,13 @@ module TimeDomain =
                             ctx.FillRect(float i, y, 1., 1.)
                       )
 
-
-    let ButtonEvent biq (_ : Element) (_ : Events.MouseEvent) =
-        filter.Type <- biq
+    let rFilter =
+        Var.Create(BiquadFilterType.Allpass)
+            .Lens id (fun _ x -> filter.Type <- x; x)
 
     let GenRadioButton (filter : BiquadFilterType) =
-        let radio = Input [ Attr.Type "radio"; Attr.Name "filters"; ]
-                        |>! OnClick (ButtonEvent filter)
-        Div [ radio ] -< [ Text <| string filter ]
+        let radio = Doc.Radio [attr.name "filters"] filter rFilter
+        div [] [label [] [radio; text (string filter)]]
 
     let Filters =
         [
@@ -123,11 +125,14 @@ module TimeDomain =
                 fun bff ->
                     buffer := bff
                     Analyser ()
-                    JQuery.Of(RadioGroup.[0].Dom).Children().First().Prop("checked", "true") |> ignore
-                    JQuery.Of(elem).Append((Div [Attr.Style "display: inline-block"] -< RadioGroup).Dom) |> ignore
+                    rFilter := BiquadFilterType.Allpass
             )
 
-        JQuery.Of(elem).Append(CanvasEl.Dom) |> ignore
+        Doc.Concat [
+            CanvasEl
+            div [Attr.Style "display" "inline-block"] RadioGroup
+        ]
+        |> Doc.Run elem
         LoadSound "diesirae.mp3" ignition
     
     let Sample =
