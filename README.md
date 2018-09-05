@@ -5,5 +5,5 @@
 
 Please note that these features are rather new and not supported in every browser.
 
-[samp]: https://intellifactory.github.io/websharper.webaudio.samples
+[samp]: https://websharper-samples.github.io/WebAudio
 [ws]: https://websharper.com/
